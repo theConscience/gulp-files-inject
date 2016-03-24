@@ -1,16 +1,16 @@
 {
-    "name": "gulp-style-inject",
-    "version": "0.0.3",
-    "description": "A plugin for Gulp. Inject css file into html style tags.",
+    "name": "gulp-files-inject",
+    "version": "0.0.4",
+    "description": "A plugin for Gulp. Replace css links and js scripts with contents of bounded files.",
     "keywords": [
         "gulpplugin"
     ],
     "author": {
-        "name": "Vlad Filip",
-        "email": "vlad.filip.dev@gmail.ro",
-        "url": "https://github.com/vladfilipro"
+        "name": "Victor Kaptsov",
+        "email": "vinton.mail@gmail.com",
+        "url": "https://github.com/theConscience"
     },
-    "repository": "vladfilipro/gulp-style-inject",
+    "repository": "theConscience/gulp-files-inject",
     "scripts": {
         "test": "istanbul test ./node_modules/mocha/bin/_mocha --report html -- test/*.js --reporter spec",
         "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
@@ -33,6 +33,6 @@
     },
     "licenses": [ {
         "type": "MIT",
-        "url": "http://github.com/vladfilipro/gulp-style-inject/raw/master/LICENSE"
+        "url": ""
     } ]
 }

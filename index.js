@@ -6,6 +6,8 @@ module.exports = function ( option ) {
     'use strict';
 
     var CONST_PATTERN = '<\\!--\\s*inject-style\\s*(.*?)\\s*-->';
+    var CSS_LINK_PATTERN = '<link .*href="([^\.]\.css)"[^>]*>';
+    var JS_SCRIPT_PATTERN = '<script .*src="([^\.]\.js)"[^>]*>';
 
     var self = null;
 
@@ -24,8 +26,63 @@ module.exports = function ( option ) {
         option.match_pattern = CONST_PATTERN;
     }
 
+    if ( option.css_match_pattern ) {
+        try {
+            new RegExp( option.css_match_pattern );
+        } catch ( e ) {
+            this.emit( 'error',
+                new gutil.PluginError( 'gulp-style-inject', ' Invalid `css_match_pattern` parameter. Regular expression string required.' ) );
+        }
+    } else {
+        option.css_match_pattern = CSS_LINK_PATTERN;
+    }
+
+    if ( option.js_match_pattern ) {
+        try {
+            new RegExp( option.js_match_pattern );
+        } catch ( e ) {
+            this.emit( 'error',
+                new gutil.PluginError( 'gulp-style-inject', ' Invalid `js_match_pattern` parameter. Regular expression string required.' ) );
+        }
+    } else {
+        option.js_match_pattern = JS_SCRIPT_PATTERN;
+    }
+
     if (!option.path) {
         option.path = '';
+    }
+
+    if ( option.static_url_path ) {
+        try {
+            option.static_url_path = '' + option.static_url_path;
+        } catch ( e ) {
+            this.emit( 'error',
+                new gutil.PluginError( 'gulp-style-inject', ' Invalid `static_url_path` parameter. String required.' ) );
+        }
+    } else {
+        option.static_url_path = '';
+    }
+
+    if ( option.django_static_variable ) {
+        try {
+            option.django_static_variable = '{{ ' + option.django_static_variable + ' }}';
+        } catch ( e ) {
+            this.emit( 'error',
+                new gutil.PluginError( 'gulp-style-inject', ' Invalid `django_static_variable` parameter. String required.' ) );
+        }
+    } else {
+        option.django_static_variable = '{{ STATIC_URL }}';
+    }
+
+    if ( option.django_ext_variable ) {
+        try {
+            option.django_ext_variable = '{{ ' + option.django_ext_variable + ' }}';
+        } catch ( e ) {
+            this.emit( 'error',
+                new gutil.PluginError( 'gulp-style-inject', ' Invalid `django_ext_variable` parameter. String required.' ) );
+        }
+    } else {
+        option.django_ext_variable = '{{ STATIC_EXT }}';
     }
 
     function throwError( msg ) {
@@ -37,7 +94,16 @@ module.exports = function ( option ) {
         return '<style>\n' + contents + '\n</style>';
     }
 
+    function transformLinkResponse( contents ) {
+        return '\n' + contents + '\n';
+    }
+
+    function transformScriptResponse( contents ) {
+        return '\n' + contents + '\n';
+    }
+
     function getAttributes( params ) {
+        new gutil.log( 'getAttributes get such parameters:' + params );
         var result = {};
         var group = params.replace( /\s+/gi, ' ' )
             .split( ' ' );
@@ -53,6 +119,22 @@ module.exports = function ( option ) {
     function getStyleFile( source ) {
         if ( source ) {
             return transformResponse( fs.readFileSync( source ) );
+        } else {
+            throwError( 'ERROR: No source file specified.' );
+        }
+    }
+
+    function getCssFile( source ) {
+        if ( source ) {
+            return transformLinkResponse( fs.readFileSync( source ) );
+        } else {
+            throwError( 'ERROR: No source file specified.' );
+        }
+    }
+
+    function getJsFile( source ) {
+        if ( source ) {
+            return transformScriptResponse( fs.readFileSync( source ) );
         } else {
             throwError( 'ERROR: No source file specified.' );
         }
@@ -82,8 +164,46 @@ module.exports = function ( option ) {
             var contents = String( file.contents );
 
             contents = contents.replace( new RegExp( option.match_pattern, 'gi' ), function ( match, parameters ) {
+                new gutil.log('Files contents after regexp: ' + contents);
                 var attrs = getAttributes( parameters );
+                new gutil.log('option.path is: ' + option.path);
                 return getStyleFile( option.path + attrs.src );
+            } );
+
+            contents = contents.replace( new RegExp( option.css_match_pattern, 'gi' ), function ( match, parameters ) {
+                new gutil.log('Files contents after regexp: ' + contents);
+                var attrs = getAttributes( parameters );
+                if (attrs.href !== 'undefined') {
+                    new gutil.log('Get link, href value is: ' + attrs.href);
+                    if (attrs.href.indexOf(options.django_static_variable) !== -1) {
+                        attrs.href = attrs.href.replace(options.django_static_variable, options.static_url_path);
+                        new gutil.log('django_static_variable replaced, href value is: ' + attrs.href);
+                    }
+                    if (attrs.href.indexOf(options.django_ext_variable) !== -1) {
+                        attrs.href = attrs.href.replace(options.django_ext_variable, '');
+                        new gutil.log('django_ext_variable deleted, href value is: ' + attrs.href);
+                    }
+                    new gutil.log('option.path is: ' + option.path);
+                    return getCssFile( option.path + attrs.href );
+                }
+            } );
+
+            contents = contents.replace( new RegExp( option.js_match_pattern, 'gi' ), function ( match, parameters ) {
+                new gutil.log('Files contents after regexp: ' + contents);
+                var attrs = getAttributes( parameters );
+                if (attrs.src !== 'undefined') {
+                    new gutil.log('Get script, src value is: ' + attrs.src);
+                    if (attrs.src.indexOf(options.django_static_variable) !== -1) {
+                        attrs.src = attrs.src.replace(options.django_static_variable, options.static_url_path);
+                        new gutil.log('django_static_variable replaced, src value is: ' + attrs.src);
+                    }
+                    if (attrs.src.indexOf(options.django_ext_variable) !== -1) {
+                        attrs.src = attrs.src.replace(options.django_ext_variable, '');
+                        new gutil.log('django_ext_variable deleted, src value is: ' + attrs.src);
+                    }
+                    new gutil.log('option.path is: ' + option.path);
+                    return getJsFile( option.path + attrs.src );
+                }
             } );
 
             file.contents = new Buffer( contents );
