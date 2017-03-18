@@ -6,7 +6,7 @@ var path = require('path');
 module.exports = function(option) {
     'use strict';
 
-    var logger = true;
+    var logger = false;
 
     var CONST_PATTERN = '<\\!--\\s*inject-style\\s*(.*?)\\s*-->';
     var CSS_LINK_PATTERN = '<link\\s*(.*?)\\s*>'; //'<link href="([^\\.]\\.css)"[^>]*>';
@@ -271,7 +271,7 @@ module.exports = function(option) {
 
         var newContent = '';
 
-        new gutil.log(gutil.colors.yellow('Original file content, before regexp css_match_pattern and js_match_pattern: ') + '\n' + gutil.colors.green(content));
+        if (logger) new gutil.log(gutil.colors.yellow('Original file content, before regexp css_match_pattern and js_match_pattern: ') + '\n' + gutil.colors.green(content));
 
         if ((type === 'css') || !type) {
             content.replace(new RegExp(option.css_match_pattern, 'gi'), function(match, parameters) {  // используем .replace не по назначению, по хорошему надо бы заменить на .match
@@ -285,7 +285,7 @@ module.exports = function(option) {
                     // return styleFileContent;  // мы ничего не возвращаем потому что нам нет смысла менять строку content - мы создаём новую newContent
                 }
             });
-            new gutil.log(gutil.colors.yellow('New File content after regexp css_match_pattern!: ') + '\n' + gutil.colors.green(newContent));
+            if (logger) new gutil.log(gutil.colors.yellow('New File content after regexp css_match_pattern!: ') + '\n' + gutil.colors.green(newContent));
         }
 
         if ((type === 'js') || !type) {
@@ -300,7 +300,7 @@ module.exports = function(option) {
                     // return scriptFileContent;  // мы ничего не возвращаем потому что нам нет смысла менять строку content - мы создаём новую newContent
                 }
             });
-            new gutil.log(gutil.colors.yellow('New file content after regexp js_match_pattern: ') + '\n' + gutil.colors.green(newContent));
+            if (logger) new gutil.log(gutil.colors.yellow('New file content after regexp js_match_pattern: ') + '\n' + gutil.colors.green(newContent));
         }
 
         if (logger) console.log('newContent:\n', newContent);
@@ -409,7 +409,7 @@ module.exports = function(option) {
         if (file.isBuffer()) {
             new gutil.log('file is buffer!');
             var contents = String(file.contents);
-            new gutil.log(gutil.colors.yellow('Files contents before regexp: ') + '\n' + gutil.colors.magenta(contents));
+            if (logger) new gutil.log(gutil.colors.yellow('Files contents before regexp: ') + '\n' + gutil.colors.magenta(contents));
 
             var vinylFilesBundlesArr = [];
 
@@ -419,7 +419,7 @@ module.exports = function(option) {
             var scriptsBundlesContent = contents.match(new RegExp(CONCATENATE_ASSETS_JS_CONTENT_PATTERN, 'i'));
             if (scriptsBundlesContent) {
                 var tempJsBundleFileContents = scriptsBundlesContent[1];
-                new gutil.log(gutil.colors.yellow('temp js file contents after regexp CONCATENATE_ASSETS_JS_CONTENT_PATTERN!: ') + '\n' + gutil.colors.green(tempJsBundleFileContents));
+                if (logger) new gutil.log(gutil.colors.yellow('temp js file contents after regexp CONCATENATE_ASSETS_JS_CONTENT_PATTERN!: ') + '\n' + gutil.colors.green(tempJsBundleFileContents));
                 // если нашли совпадение
                 if (tempJsBundleFileContents) {
                     // создаём новый Vinyl-файл для Js-бандла, клонируя наш исходный (пока он просто висит в памяти)
@@ -513,7 +513,7 @@ module.exports = function(option) {
             var stylesBundlesContent = contents.match(new RegExp(CONCATENATE_ASSETS_CSS_CONTENT_PATTERN, 'i'));
             if (stylesBundlesContent) {
                 var tempCssBundleFileContents = stylesBundlesContent[1];
-                new gutil.log(gutil.colors.yellow('temp CSS file contents after regexp CONCATENATE_ASSETS_CSS_CONTENT_PATTERN!: ') + '\n' + gutil.colors.green(tempCssBundleFileContents));
+                if (logger) new gutil.log(gutil.colors.yellow('temp CSS file contents after regexp CONCATENATE_ASSETS_CSS_CONTENT_PATTERN!: ') + '\n' + gutil.colors.green(tempCssBundleFileContents));
                 // если нашли совпадение
                 if (tempCssBundleFileContents) {
                     // создаём новый Vinyl-файл для Css-бандла, клонируя наш исходный (пока он просто висит в памяти)
