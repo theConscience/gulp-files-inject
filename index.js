@@ -251,7 +251,7 @@ module.exports = function(option) {
             var file = fs.readFileSync(source);
             if (logger) console.log('CSS Style FILE: \n', file);
 
-            if (options.watcher) { watchedFilesArr.push(source); }
+            if (option.watcher) { watchedFilesArr.push(source); }
 
             return transformLinkBundleResponse(file);
         } else {
@@ -264,7 +264,7 @@ module.exports = function(option) {
             var file = fs.readFileSync(source);
             if (logger) console.log('JS Script FILE: \n', file);
 
-            if (options.watcher) { watchedFilesArr.push(source); }
+            if (option.watcher) { watchedFilesArr.push(source); }
 
             return transformScriptBundleResponse(file);
         } else {
@@ -625,7 +625,7 @@ module.exports = function(option) {
             // file.contents = new Buffer(contents);
             // this.push(file);
 
-            if (options.watcher) {
+            if (option.watcher) {
                 watcher.add(watchedFilesArr);
             }
 
