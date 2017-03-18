@@ -46,6 +46,8 @@ module.exports = function(option) {
     var CSS_STYLE_HREF_PATTERN = '<link(.*\\s(href)(?==)="([^"]*)(?=")".*)\\s*/?>';
     var CSS_STYLE_REL_PATTERN = '<link(.*\\s(rel)(?==)="([^"]*)(?=")".*)\\s*/?>';
 
+    var VERSION_OF_ASSET_PATTERN = '\\?v=(.*?)(?=[\'\"])';
+
     var self = null;
 
     if (!option) {
@@ -187,6 +189,13 @@ module.exports = function(option) {
         }
 
         var result = {};
+
+        params = params.replace(new RegExp(VERSION_OF_ASSET_PATTERN, 'gi'), function(str, version) {  // вырезаем версию, если есть
+            result['version'] = version;
+            if (logger) console.log('version ' + version + ' found, remove from attribute, adding to params');
+            return '';
+        });
+
         var group = params.replace(/\s+/gi, ' ')
             .split(' ');
         for (var i = 0; i < group.length; i++) {
@@ -267,6 +276,7 @@ module.exports = function(option) {
         if ((type === 'css') || !type) {
             content.replace(new RegExp(option.css_match_pattern, 'gi'), function(match, parameters) {  // используем .replace не по назначению, по хорошему надо бы заменить на .match
                 var attrs = getAttributes(parameters);  // получаем атрибуты каждого style-тэга
+                if (logger) console.log('link attrs:', attrs);
                 if (attrs.href !== 'undefined') {
                     new gutil.log('Get link, href value is: ' + attrs.href);
                     new gutil.log('option.path is: ' + option.path);
@@ -281,6 +291,7 @@ module.exports = function(option) {
         if ((type === 'js') || !type) {
             content.replace(new RegExp(option.js_match_pattern, 'gi'), function(match, parameters) {  // используем .replace не по назначению, по хорошему надо бы заменить на .match
                 var attrs = getAttributes(parameters);  // получаем атрибуты каждого script-тэга
+                if (logger) console.log('script attrs:', attrs);
                 if (attrs.src !== 'undefined') {
                     new gutil.log('Get script, src value is: ' + attrs.src);
                     new gutil.log('option.path is: ' + option.path);
