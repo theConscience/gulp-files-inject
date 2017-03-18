@@ -278,8 +278,8 @@ module.exports = function(option) {
                 var attrs = getAttributes(parameters);  // получаем атрибуты каждого style-тэга
                 if (logger) console.log('link attrs:', attrs);
                 if (attrs.href !== 'undefined') {
-                    new gutil.log('Get link, href value is: ' + attrs.href);
-                    new gutil.log('option.path is: ' + option.path);
+                    new gutil.log(gutil.colors.cyan('Get link, href value is: ' + attrs.href));
+                    if (logger) new gutil.log('option.path is: ' + option.path);
                     var styleFileContent = getSingleStyleFile(option.path + attrs.href);
                     newContent = newContent + styleFileContent;
                     // return styleFileContent;  // мы ничего не возвращаем потому что нам нет смысла менять строку content - мы создаём новую newContent
@@ -293,8 +293,8 @@ module.exports = function(option) {
                 var attrs = getAttributes(parameters);  // получаем атрибуты каждого script-тэга
                 if (logger) console.log('script attrs:', attrs);
                 if (attrs.src !== 'undefined') {
-                    new gutil.log('Get script, src value is: ' + attrs.src);
-                    new gutil.log('option.path is: ' + option.path);
+                    new gutil.log(gutil.colors.cyan('Get script, src value is: ' + attrs.src));
+                    if (logger) new gutil.log('option.path is: ' + option.path);
                     var scriptFileContent = getSingleScriptFile(option.path + attrs.src);
                     newContent = newContent + scriptFileContent;
                     // return scriptFileContent;  // мы ничего не возвращаем потому что нам нет смысла менять строку content - мы создаём новую newContent
@@ -448,12 +448,13 @@ module.exports = function(option) {
                     // если вложенные бандлы в содержимом GENERATE_BUNDLES найдены: создаём для каждого по vinyl-файлу,
                     // преобразуем содержимое каждого, заменяя скрипты на их контент, заполняем содержимым из объекта
                     if (tempJsBundlesArr.length) {
-                        new gutil.log(gutil.colors.yellow('There are named bundles in JS bundler:'));
+                        new gutil.log(gutil.colors.green('There are named bundles in JS bundler:'));
 
                         var notNewJsBundleVinylFile = function(item) { return item !== newJsBundleVinylFile; };
                         vinylFilesBundlesArr = vinylFilesBundlesArr.filter(notNewJsBundleVinylFile); // удаляем общий бандл из массива бандлов
 
                         tempJsBundlesArr.forEach(function(item, i) {
+                            new gutil.log(gutil.colors.yellow('Processing scripts bundle:', item.name));
                             var newJsNamedBundleVinylFile = file.clone();  // создаём для каждого по vinyl-файлу
                             var newBundleContent = assetsConcatenator(item.content, 'js');  // преобразуем его содержимое, заменяя скрипты на их контент
                             newJsNamedBundleVinylFile.contents = new Buffer(newBundleContent);  // заполняем новым содержимым
@@ -474,12 +475,14 @@ module.exports = function(option) {
                             }
 
                             newJsNamedBundleVinylFile.path = newJsNamedBundleVinylFile.path.replace(path.basename(relative), relativeName + '.' + item.name + '.concatenated.js');
+                            new gutil.log(gutil.colors.yellow.bold('Bundle ' + relativeName + '.' + item.name + '.concatenated.js created'));
                             if (logger) console.log('newJsNamedBundleVinylFile.path:', newJsNamedBundleVinylFile.path);
 
                             vinylFilesBundlesArr.push(newJsNamedBundleVinylFile);
                         });
                     } else { // если нет - преобразуем всё содержимое GENERATE_BUNDLES
-                        new gutil.log(gutil.colors.yellow('There are no named bundles in JS bundler:'));
+                        new gutil.log(gutil.colors.green('There are no named bundles in JS bundler:'));
+                        new gutil.log(gutil.colors.yellow('Processing single scripts bundle:'));
                         newJsBundleFileContents = assetsConcatenator(newJsBundleFileContents, 'js');
                         newJsBundleVinylFile.contents = new Buffer(newJsBundleFileContents);
                         var relative = newJsBundleVinylFile.relative;
@@ -499,6 +502,7 @@ module.exports = function(option) {
                         }
 
                         newJsBundleVinylFile.path = newJsBundleVinylFile.path.replace(path.basename(relative), relativeName + '.concatenated.js');
+                        new gutil.log(gutil.colors.yellow.bold('Bundle ' + relativeName + '.concatenated.js created'));
                         if (logger) console.log('newJsBundleVinylFile.path:', newJsBundleVinylFile.path);
                     }
                     if (logger) console.log('vinylFilesBundlesArr:', vinylFilesBundlesArr);
@@ -542,12 +546,13 @@ module.exports = function(option) {
                     // если вложенные бандлы в содержимом GENERATE_BUNDLES найдены: создаём для каждого по vinyl-файлу,
                     // преобразуем содержимое каждого, заменяя скрипты на их контент, заполняем содержимым из объекта
                     if (tempCssBundlesArr.length) {
-                        new gutil.log(gutil.colors.yellow('There are named bundles in CSS bundler:'));
+                        new gutil.log(gutil.colors.green('There are named bundles in CSS bundler:'));
 
                         var notNewCssBundleVinylFile = function(item) { return item !== newCssBundleVinylFile; };
                         vinylFilesBundlesArr = vinylFilesBundlesArr.filter(notNewCssBundleVinylFile); // удаляем общий бандл из массива бандлов
 
                         tempCssBundlesArr.forEach(function(item, i) {
+                            new gutil.log(gutil.colors.yellow('Processing styles bundle:', item.name));
                             var newCssNamedBundleVinylFile = file.clone();  // создаём для каждого по vinyl-файлу
                             var newBundleContent = assetsConcatenator(item.content, 'css');  // преобразуем его содержимое, заменяя скрипты на их контент
                             newCssNamedBundleVinylFile.contents = new Buffer(newBundleContent);  // заполняем новым содержимым
@@ -568,12 +573,14 @@ module.exports = function(option) {
                             }
 
                             newCssNamedBundleVinylFile.path = newCssNamedBundleVinylFile.path.replace(path.basename(relative), relativeName + '.' + item.name + '.concatenated.css');
+                            new gutil.log(gutil.colors.yellow.bold('Bundle ' + relativeName + '.' + item.name + '.concatenated.css created'));
                             if (logger) console.log('newCssNamedBundleVinylFile.path:', newCssNamedBundleVinylFile.path);
 
                             vinylFilesBundlesArr.push(newCssNamedBundleVinylFile);
                         });
                     } else { // если нет - преобразуем всё содержимое GENERATE_BUNDLES
-                        new gutil.log(gutil.colors.yellow('There are no named bundles in CSS bundler:'));
+                        new gutil.log(gutil.colors.green('There are no named bundles in CSS bundler:'));
+                        new gutil.log(gutil.colors.yellow('Processing single styles bundle:'));
                         newCssBundleFileContents = assetsConcatenator(newCssBundleFileContents, 'css');
                         newCssBundleVinylFile.contents = new Buffer(newCssBundleFileContents);
                         var relative = newCssBundleVinylFile.relative;
@@ -593,6 +600,7 @@ module.exports = function(option) {
                         }
 
                         newCssBundleVinylFile.path = newCssBundleVinylFile.path.replace(path.basename(relative), relativeName + '.concatenated.css');
+                        new gutil.log(gutil.colors.yellow.bold('Bundle ' + relativeName + '.concatenated.css created'));
                         if (logger) console.log('newCssBundleVinylFile.path:', newCssBundleVinylFile.path);
                     }
                     if (logger) console.log('vinylFilesBundlesArr:', vinylFilesBundlesArr);
