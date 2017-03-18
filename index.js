@@ -585,7 +585,7 @@ module.exports = function(option) {
             // this.push(file);
 
             vinylFilesBundlesArr.forEach(function(bundle) {
-                console.log('!!!!!!!!!!!!!\n', bundle);
+                if (logger) console.log('!!!!!!!!!!!!!\n', bundle);
                 self.push(bundle);
             });
             return callback();
