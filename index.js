@@ -54,6 +54,10 @@ module.exports = function(option) {
         option = {};
     }
 
+    if (!option.path) {
+        option.path = '';
+    }
+
     if (option.match_pattern) {
         try {
             new RegExp(option.match_pattern);
@@ -86,11 +90,6 @@ module.exports = function(option) {
     } else {
         option.js_match_pattern = JS_SCRIPT_PATTERN;
     }
-
-    if (!option.path) {
-        option.path = '';
-    }
-    console.log('option.path = ' + option.path);
 
     if (option.static_url_path) {
         try {
@@ -125,11 +124,19 @@ module.exports = function(option) {
         option.django_ext_variable = '{{ STATIC_EXT }}';
     }
 
+    var watchedFilesArr = [];
+
+    if (!option.watcher) {
+        option.watcher = false;
+    }
+
+    console.log('option.path = ' + option.path);
     console.log('option.css_match_pattern = ' + option.css_match_pattern);
     console.log('option.js_match_pattern = ' + option.js_match_pattern);
     console.log('option.static_url_path = ' + option.static_url_path);
     console.log('option.django_static_variable = ' + option.django_static_variable);
     console.log('option.django_ext_variable = ' + option.django_ext_variable);
+    console.log('option.watcher = ' + option.watcher);
 
     function throwError(msg) {
         self.emit('error',
@@ -243,6 +250,9 @@ module.exports = function(option) {
         if (source) {
             var file = fs.readFileSync(source);
             if (logger) console.log('CSS Style FILE: \n', file);
+
+            if (options.watcher) { watchedFilesArr.push(source); }
+
             return transformLinkBundleResponse(file);
         } else {
             throwError('ERROR: No source file specified.');
@@ -253,6 +263,9 @@ module.exports = function(option) {
         if (source) {
             var file = fs.readFileSync(source);
             if (logger) console.log('JS Script FILE: \n', file);
+
+            if (options.watcher) { watchedFilesArr.push(source); }
+
             return transformScriptBundleResponse(file);
         } else {
             throwError('ERROR: No source file specified.');
@@ -611,6 +624,10 @@ module.exports = function(option) {
 
             // file.contents = new Buffer(contents);
             // this.push(file);
+
+            if (options.watcher) {
+                watcher.add(watchedFilesArr);
+            }
 
             vinylFilesBundlesArr.forEach(function(bundleFile) {
                 if (logger) console.log('!!!!!!!!!!!!!\n', bundleFile);

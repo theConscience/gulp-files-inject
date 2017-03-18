@@ -1,38 +1,41 @@
 {
-    "name": "gulp-files-inject",
-    "version": "0.0.8",
-    "description": "A plugin for Gulp. Look for special marks in html files, and concatenate script and link tags sources to bundles",
-    "keywords": [
-        "gulpplugin"
-    ],
-    "author": {
-        "name": "Victor Kaptsov",
-        "email": "vinton.mail@gmail.com",
-        "url": "https://github.com/theConscience"
-    },
-    "repository": "theConscience/gulp-files-inject",
-    "scripts": {
-        "test": "istanbul test ./node_modules/mocha/bin/_mocha --report html -- test/*.js --reporter spec",
-        "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
-    },
-    "dependencies": {
-        "through2": "0.6.3",
-        "gulp-util": "3.0.3"
-    },
-    "devDependencies": {
-        "mocha": "2.1.0",
-        "coveralls": "2.11.2",
-        "mocha-lcov-reporter": "0.0.1",
-        "istanbul": "0.3.5",
-        "event-stream": "3.2.2",
-        "should": "5.0.0"
-    },
-    "engines": {
-        "node": ">=0.8.0",
-        "npm": ">=1.2.10"
-    },
-    "licenses": [ {
-        "type": "MIT",
-        "url": ""
-    } ]
+  "name": "gulp-files-inject",
+  "version": "0.0.9",
+  "description": "A plugin for Gulp. Look for special marks in html files, and concatenate script and link tags sources to bundles",
+  "keywords": [
+    "gulpplugin"
+  ],
+  "author": {
+    "name": "Victor Kaptsov",
+    "email": "vinton.mail@gmail.com",
+    "url": "https://github.com/theConscience"
+  },
+  "repository": "theConscience/gulp-files-inject",
+  "scripts": {
+    "test": "istanbul test ./node_modules/mocha/bin/_mocha --report html -- test/*.js --reporter spec",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
+  "dependencies": {
+    "through2": "0.6.3",
+    "gulp-util": "3.0.3"
+  },
+  "devDependencies": {
+    "coveralls": "2.11.2",
+    "event-stream": "3.2.2",
+    "gaze": "^1.1.2",
+    "istanbul": "0.3.5",
+    "mocha": "2.1.0",
+    "mocha-lcov-reporter": "0.0.1",
+    "should": "5.0.0"
+  },
+  "engines": {
+    "node": ">=0.8.0",
+    "npm": ">=1.2.10"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": ""
+    }
+  ]
 }
