@@ -1,7 +1,7 @@
 {
     "name": "gulp-files-inject",
-    "version": "0.0.4",
-    "description": "A plugin for Gulp. Replace css links and js scripts with contents of bounded files.",
+    "version": "0.0.5",
+    "description": "A plugin for Gulp. Look for special marks in html files, and concatenate script and link tags sources to bundles",
     "keywords": [
         "gulpplugin"
     ],
