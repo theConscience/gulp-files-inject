@@ -626,7 +626,7 @@ module.exports = function(option) {
             // this.push(file);
 
             if (option.watcher) {
-                watcher.add(watchedFilesArr);
+                option.watcher.add(watchedFilesArr);
             }
 
             vinylFilesBundlesArr.forEach(function(bundleFile) {
